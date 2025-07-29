@@ -2,7 +2,7 @@
   "name": "recorder",
   "displayName": "recorder",
   "description": "Record programmer operations and generate SOP.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "TokenRollAI",
   "license": "CC-BY-NC-4.0",
   "engines": {
@@ -15,6 +15,18 @@
     "type": "git",
     "url": "https://github.com/TokenRollAI/recorder.git"
   },
+  "bugs": {
+    "url": "https://github.com/TokenRollAI/recorder/issues"
+  },
+  "homepage": "https://github.com/TokenRollAI/recorder",
+  "keywords": [
+    "recorder",
+    "sop",
+    "programming",
+    "developer",
+    "code"
+  ],
+  "icon": "icons/icon.png",
   "activationEvents": [
     "onStartupFinished"
   ],
