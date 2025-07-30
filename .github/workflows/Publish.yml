@@ -1,101 +1,134 @@
+# 工作流名称：发布VS Code扩展到Open-VSX Registry
 name: Publish to Open-VSX
 
+# 工作流触发条件
 on:
+  # 当推送以 'v' 开头的标签时触发（如 v1.0.0）
   push:
     tags:
-      - 'v*'  # 当推送版本标签时触发
+      - 'v*'  # 版本标签模式，用于正式发布
+  
+  # 当向master分支提交Pull Request时触发（用于测试）
   pull_request:
     branches: [ master ]
-  workflow_dispatch:  # 手动触发
+  
+  # 允许手动触发工作流
+  workflow_dispatch:
 
+# 工作流任务定义
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    name: Test Extension
+  # 任务1：准备环境、编译扩展
+  compile:
+    runs-on: ubuntu-latest  # 运行在最新的Ubuntu环境
+    name: Compile Extension    # 任务显示名称
     steps:
+      # 步骤1：检出代码仓库
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # 使用官方检出Action的v4版本
 
+      # 步骤2：设置Node.js环境
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4  # 使用官方Node.js设置Action
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: '18'  # 指定Node.js版本为18
+          cache: 'npm'        # 启用npm缓存以加速构建
 
+      # 步骤3：安装依赖包
       - name: Install dependencies
-        run: npm ci
+        run: npm ci  # 使用npm ci进行清洁安装，比npm install更适合CI环境
 
-
+      # 步骤4：编译TypeScript代码
       - name: Compile TypeScript
-        run: npm run compile
+        run: npm run compile  # 执行package.json中定义的编译脚本
 
+  # 任务2：打包扩展
   package:
-    needs: test
+    needs: compile  # 依赖于compile任务成功完成
     runs-on: ubuntu-latest
     name: Package Extension
+    # 定义输出变量，供后续任务使用
     outputs:
-      vsix-path: ${{ steps.package.outputs.vsix-path }}
+      vsix-path: ${{ steps.package.outputs.vsix-path }}  # 输出VSIX文件路径
     steps:
+      # 重新检出代码（每个任务都是独立的环境）
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 重新设置Node.js环境
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
+      # 重新安装依赖
       - name: Install dependencies
         run: npm ci
 
+      # 安装vsce工具（VS Code Extension Manager）
       - name: Install vsce
-        run: npm install -g @vscode/vsce
+        run: npm install -g @vscode/vsce  # 全局安装VS Code扩展打包工具
 
+      # 打包扩展为VSIX文件
       - name: Package extension
-        id: package
+        id: package  # 为这个步骤设置ID，用于输出变量
         run: |
-          vsce package
+          vsce package  # 使用vsce打包扩展
+          # 将生成的VSIX文件路径写入GitHub输出变量
           echo "vsix-path=$(ls *.vsix)" >> $GITHUB_OUTPUT
 
+      # 上传VSIX文件作为构建产物
       - name: Upload VSIX artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4  # 使用官方上传产物Action
         with:
-          name: vsix-package
-          path: '*.vsix'
+          name: vsix-package  # artifact工作流名称
+          path: '*.vsix'      # 上传所有VSIX文件
 
+  # 任务3：发布到Open-VSX Registry
   publish-openvsx:
-    needs: [test, package]
+    needs: [compile, package]  # 依赖于compile和package任务都成功完成
     runs-on: ubuntu-latest
     name: Publish to Open-VSX
+    # 条件执行：只有推送版本标签时才执行发布
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
+      # 检出代码
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 设置Node.js环境（发布不需要缓存，因为不安装项目依赖）
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
+      # 下载之前上传的VSIX产物
       - name: Download VSIX artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4  # 使用官方下载产物Action
         with:
-          name: vsix-package
+          name: vsix-package  # 下载指定名称的产物
 
+      # 安装ovsx工具（Open-VSX Registry发布工具）
       - name: Install ovsx
-        run: npm install -g ovsx
+        run: npm install -g ovsx  # 全局安装Open-VSX发布工具
 
+      # 发布扩展到Open-VSX Registry
       - name: Publish to Open-VSX
         run: |
+          # 获取VSIX文件名
           vsix_file=$(ls *.vsix)
+          # 使用ovsx发布到Open-VSX Registry
           ovsx publish $vsix_file -p ${{ secrets.OPEN_VSX_TOKEN }}
         env:
+          # 设置环境变量，从GitHub Secrets获取发布令牌
           OPEN_VSX_TOKEN: ${{ secrets.OPEN_VSX_TOKEN }}
 
+      # 创建GitHub Release
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v1  # 使用第三方GitHub Release创建Action
         with:
-          files: '*.vsix'
-          generate_release_notes: true
+          files: '*.vsix'              # 将VSIX文件附加到Release
+          generate_release_notes: true # 自动生成Release说明
         env:
+          # 使用GitHub自动提供的令牌
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
