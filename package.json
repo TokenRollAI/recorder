@@ -2,7 +2,7 @@
   "name": "recorder",
   "displayName": "recorder",
   "description": "Record programmer operations and generate SOP.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "TokenRollAI",
   "license": "CC-BY-NC-4.0",
   "engines": {
