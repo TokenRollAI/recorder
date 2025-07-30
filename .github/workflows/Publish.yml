@@ -1,6 +1,12 @@
 # 工作流名称：发布VS Code扩展到Open-VSX Registry
 name: Publish to Open-VSX
 
+# 定义GitHub Actions的权限
+permissions:
+  contents: write        # 允许读写仓库内容
+  pull-requests: read    # 允许读取PR信息
+  id-token: write        # 允许写入ID令牌
+
 # 工作流触发条件
 on:
   # 当推送以 'v' 开头的标签时触发（如 v1.0.0）
@@ -125,10 +131,10 @@ jobs:
 
       # 创建GitHub Release
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1  # 使用第三方GitHub Release创建Action
+        uses: softprops/action-gh-release@v2  # 使用第三方GitHub Release创建Action
         with:
           files: '*.vsix'              # 将VSIX文件附加到Release
           generate_release_notes: true # 自动生成Release说明
         env:
           # 使用GitHub自动提供的令牌
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
