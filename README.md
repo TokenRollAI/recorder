@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="./icons/icon.png" alt="logo" />
+</p>
+
 # Recorder
 
-**JUST DO ONCE**
+**[JUST DO ONCE](https://recorder.tokenroll.ai/blog/just-do-once)** | [SOP Coding](https://recorder.tokenroll.ai/blog/sop-coding)
 
 ## Overview
 
@@ -8,14 +12,24 @@ Recorder is a powerful VS Code extension that intelligently captures your entire
 
 ## Documentation
 
-Complete documentation and advanced usage: https://recorder-doc.pdjjq.org/
+* [official website](https://recorder.tokenroll.ai/)
+* [Document](https://recorder.tokenroll.ai/docs)
 
+## Usage
+
+* [Install uvx and SPEC-mcp](https://recorder.tokenroll.ai/docs/prerequisites)
+* Install Recorder Plugin
+  * [VsCode](https://recorder.tokenroll.ai/docs/vscode/installation)
+  * [Jetbrains](https://recorder.tokenroll.ai/docs/jetbrains/installation)
+* Click start recording and work, then click stop, get generated operation.json
+* enable SPEC-mcp, input `call generate_operation_md` , generate SOP
+* Use SOP on next repeat
 
 ## Features
 
 - **Complete Workflow Capture**: Records terminal commands, file operations, and code changes in real-time
 - **Intelligent Git Integration**: Automatically detects Git-tracked files and captures meaningful diffs instead of full content
-- **Smart Filtering**: Respects `.gitignore` patterns and excludes `.git` directories automatically  
+- **Smart Filtering**: Respects `.gitignore` patterns and excludes `.git` directories automatically
 - **Structured Output**: Generates clean, timestamped JSON logs ready for automation and documentation
 - **Zero Configuration**: Works out of the box with any workspace
 - **Performance Optimized**: Minimal overhead during recording sessions
@@ -26,7 +40,7 @@ Complete documentation and advanced usage: https://recorder-doc.pdjjq.org/
 - Click the `$(record) Start Recording` button in the status bar
 - Open a workspace folder to begin capturing operations
 
-### Stop Recording  
+### Stop Recording
 - Click the `$(debug-stop) Recording` button to stop
 - Your complete workflow is automatically saved to `operation.json`
 
@@ -36,7 +50,7 @@ Complete documentation and advanced usage: https://recorder-doc.pdjjq.org/
 ```json
 {
   "timestamp": 1703123456789,
-  "type": "COMMAND", 
+  "type": "COMMAND",
   "command": "npm run build",
   "output": "Build completed successfully..."
 }
@@ -67,7 +81,7 @@ Complete documentation and advanced usage: https://recorder-doc.pdjjq.org/
 The generated `operation.json` contains a chronological array of all captured operations:
 
 - `COMMAND`: Terminal executions with full output
-- `FILE_CREATE`: New file creation events  
+- `FILE_CREATE`: New file creation events
 - `FILE_DELETE`: File deletion events
 - `FILE_DIFF`: Git diff for tracked files
 - `FILE_CONTENT`: Full content for untracked files
