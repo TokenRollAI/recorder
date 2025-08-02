@@ -1,3 +1,5 @@
+[English](./README.md) | [简体中文](./README.zh-CN.md)
+
 <p align="center">
   <img src="./icons/icon.png" alt="logo" />
 </p>
@@ -22,7 +24,7 @@ Recorder is a powerful VS Code extension that intelligently captures your entire
   * [VsCode](https://recorder.tokenroll.ai/docs/vscode/installation)
   * [Jetbrains](https://recorder.tokenroll.ai/docs/jetbrains/installation)
 * Click start recording and work, then click stop, get generated operation.json
-* enable SPEC-mcp, input `call generate_operation_md` , generate SOP
+* enable SPEC-mcp, input `call generate_operation_md and follow the instruction` , generate SOP
 * Use SOP on next repeat
 
 ## Features
